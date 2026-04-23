@@ -1,0 +1,23 @@
+Column Descriptions - NYC Taxi Test Dataset
+
+id               : Unique identifier for each trip (e.g., id3004672)
+vendor_id        : The company that provided the taxi (1 = one company, 2 = another)
+pickup_datetime  : Date and time when the passenger was picked up
+                   Format: M/D/YYYY HH:MM - needs to be converted to proper datetime
+passenger_count  : Number of passengers in the taxi (1 to 6+)
+pickup_longitude : GPS longitude coordinate of the pickup location (NYC range: -74 to -73.8)
+pickup_latitude  : GPS latitude coordinate of the pickup location (NYC range: 40.6 to 40.9)
+dropoff_longitude: GPS longitude coordinate of the dropoff location
+dropoff_latitude : GPS latitude coordinate of the dropoff location
+store_and_fwd_flag : Indicates whether the trip data was stored on the taxi's 
+                     tablet before being sent to the server.
+                     N = Data sent live (normal, most trips)
+                     Y = Data was stored on tablet first, then forwarded later
+                         (happened when taxi was in a tunnel or had no signal)
+
+Fields we will engineer later:
+trip_distance_km  : Distance calculated from GPS coordinates using Haversine formula
+hour_of_day       : Hour extracted from pickup_datetime (0-23)
+day_of_week       : Day name extracted from pickup_datetime (Monday-Sunday)
+is_weekend        : 1 if Saturday or Sunday, 0 if weekday
+distance_bucket   : Short / Medium / Long based on trip_distance_km

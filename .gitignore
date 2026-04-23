@@ -1,0 +1,21 @@
+# Data files (too large for GitHub)
+data/raw/
+*.csv
+*.zip
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+venv/
+env/
+*.env
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/

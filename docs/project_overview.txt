@@ -1,0 +1,15 @@
+Project: Smart Urban Mobility Analytics Dashboard
+Dataset: NYC Taxi Trip Duration - test.csv (Kaggle)
+Source: https://www.kaggle.com/c/nyc-taxi-trip-duration/data?select=test.zip
+
+Goal:
+Analyze NYC taxi trip patterns to understand peak hours, busy days, popular pickup zones, and distance trends. 
+Build a full-stack dashboard to visualize these insights.
+
+Tools:
+- Python (Pandas, Matplotlib) - data cleaning and EDA
+- MySQL - SQL storage and queries
+- Flask - REST API backend
+- HTML/CSS/JavaScript + Chart.js - frontend dashboard
+- AWS S3 - static hosting
+- GitHub - version control
