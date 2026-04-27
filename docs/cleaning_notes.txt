@@ -1,0 +1,33 @@
+CLEANING ISSUE LOG - NYC Taxi Dataset
+======================================
+Dataset: data/raw/test.csv
+Total Rows: 625,134 | Total Columns: 9
+
+ISSUE 1 - pickup_datetime stored as text (object)
+  Found    : dtype is 'object' — Python treats it as plain text
+  Expected : datetime64 format
+  Fix      : Convert using pd.to_datetime(df['pickup_datetime'])
+
+ISSUE 2 - GPS coordinates contain outliers outside NYC
+  Found    : Pickup longitude ranges from -121.93 to -69.25
+             Pickup latitude ranges from 37.39 to 42.81
+             Some coordinates are clearly outside New York City
+  Expected : Longitude between -74.269 and -73.699 (official NYC bounds, NYC.gov)
+             Latitude  between  40.496 and  40.916 (official NYC bounds, NYC.gov)
+  Fix      : Filter rows to keep only valid NYC coordinate ranges
+
+ISSUE 3 - passenger_count has impossible values
+  Found    : Minimum value is 0 (trip with zero passengers)
+             Maximum value is 9 (too many for a standard taxi)
+  Expected : Between 1 and 6 passengers
+  Fix      : Remove rows where passenger_count < 1 or > 6
+
+ISSUE 4 - store_and_fwd_flag is text (Y/N)
+  Found    : Stored as object with values 'Y' and 'N'
+  Fix      : Convert to integer — N=0, Y=1 for cleaner SQL storage
+
+NO ISSUES FOUND:
+  - Missing values  : 0 across all columns ✅
+  - Duplicate rows  : 0 ✅
+  - Duplicate IDs   : 0 ✅
+  - vendor_id       : Clean values (1 and 2 only) ✅
