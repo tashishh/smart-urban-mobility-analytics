@@ -1,0 +1,8 @@
+KEY FINDINGS FROM FEATURE ENGINEERING
+=======================================
+1. Peak hours: Evening rush (6-10 PM) has highest taxi demand
+2. Busiest days: Friday and Saturday lead in trip volume
+3. Weekend share: 28.4% of all trips despite being only 2/7 days
+4. Typical trip: Median distance is just 2.09 km — very short rides
+5. Distance split: 47.6% Short, 46.4% Medium, 6% Long (airport runs)
+6. Zero-distance trips: 2,413 removed - passengers who cancelled immediately
