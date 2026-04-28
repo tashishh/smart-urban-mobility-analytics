@@ -1,4 +1,4 @@
-KEY FINDINGS FROM FEATURE ENGINEERING
+KEY FINDINGS FROM FEATURE ENGINEERING - DAY 5
 =======================================
 1. Peak hours: Evening rush (6-10 PM) has highest taxi demand
 2. Busiest days: Friday and Saturday lead in trip volume
@@ -6,3 +6,18 @@ KEY FINDINGS FROM FEATURE ENGINEERING
 4. Typical trip: Median distance is just 2.09 km — very short rides
 5. Distance split: 47.6% Short, 46.4% Medium, 6% Long (airport runs)
 6. Zero-distance trips: 2,413 removed - passengers who cancelled immediately
+
+
+KEY FINDINGS FROM EDA - DAY 6
+================================
+1.  Peak hour   : 18:00 (6 PM) → 37,535 trips
+2.  Quiet hour  : 5:00 AM → only 6,200 trips
+3.  Busiest day : Friday (92,727 trips) — 19.7% more than Monday
+4.  Weekends    : Slightly longer trips (3.497 km) and more passengers (1.57 avg)
+5.  Solo trips  : 73.3% of all trips have 1 passenger
+6.  Short trips : 47.6% are under 2 km
+7.  Median dist : 2.10 km — half of all trips are under 2 km
+8.  Std Dev     : 3.857 km — heavily right-skewed by airport runs
+9.  95th pctile : 10.9 km — 95% of trips are under 10.9 km
+10. Vendors     : VeriFone 51.9% vs CMT 48.1% market share
+11. Max trip    : 41.55 km — consistent with JFK Airport run
