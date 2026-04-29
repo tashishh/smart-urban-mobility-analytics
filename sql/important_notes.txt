@@ -21,3 +21,55 @@ COLUMN TYPE DECISIONS:
 - distance_bucket  → VARCHAR(10)   "Short"/"Medium"/"Long"
 
 STATUS: Schema created, table empty - data import on Day 9
+
+
+
+==========================
+SQL IMPORT NOTES — DAY 9
+==========================
+Script   : sql/load_data.sql
+
+WHAT WAS DONE:
+  Loaded taxi_cleaned.csv into the trips table using
+  LOAD DATA LOCAL INFILE.
+
+ISSUE - Workbench blocked the import:
+  Running load_data.sql inside MySQL Workbench 8.0.44 failed
+  with the following error:
+    Error Code: 2068. LOAD DATA LOCAL INFILE file request
+    rejected due to restrictions on access.
+
+  Root cause: Workbench 8.0.44 disables local file access at
+  the client level by default. The OPT_LOCAL_INFILE=1 setting
+  in the Advanced connection tab did not fix it (known bug).
+  The my.ini config file was also not found at the expected
+  location (C:\ProgramData\MySQL\MySQL Server 8.0\).
+
+FIX — Used MySQL Command Line (CMD) instead:
+  1. Opened Command Prompt
+  2. Ran: mysql --local-infile=1 -u root -p
+  3. Entered root password
+  4. Pasted the LOAD DATA block from load_data.sql
+
+RESULT:
+  Query OK, 601662 rows affected (36.07 sec)
+  Records: 601662  Deleted: 0  Skipped: 0  Warnings: 2385740
+
+NOTE ON WARNINGS:
+  65,535 warning codes shown (2,385,740 total).
+  Non-critical - caused by empty strings coerced into numeric
+  columns. All 601,662 rows loaded. Zero rows skipped.
+
+VALIDATION RESULTS:
+  - Total rows loaded    : 601,662
+  - NULL trip_distance   : 0
+  - NULL pickup_datetime : 0
+  - NULL passenger_count : 0
+  - vendor_id values     : 1, 2 only
+  - is_weekend values    : 0, 1 only
+  - day_of_week values   : 7 distinct (Mon-Sun)
+  - distance_bucket      : 3 distinct (Short, Medium, Long)
+  - Peak hour            : 18 (6 PM) ~37,535 trips
+  - Busiest day          : Friday ~92,727 trips
+
+STATUS: Data loaded and validated - ready for Day 10 EDA
