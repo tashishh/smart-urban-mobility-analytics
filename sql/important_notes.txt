@@ -1,0 +1,23 @@
+SQL IMPORT NOTES — DAY 8
+==========================
+Database : urban_mobility
+Table    : trips
+Schema   : sql/schema.sql
+Source   : data/cleaned/taxi_cleaned.csv
+Rows     : 601,662
+Columns  : 14
+
+COLUMN TYPE DECISIONS:
+- id               → VARCHAR(20)   IDs are text strings like "id2875421"
+- vendor_id        → TINYINT       Only values 1 or 2
+- pickup_datetime  → DATETIME      Full timestamp
+- passenger_count  → TINYINT       Only values 1–5
+- GPS coordinates  → DECIMAL(9,6)  Exact precision, no float rounding errors
+- store_and_fwd_flag → TINYINT     Binary 0/1
+- hour_of_day      → TINYINT       Only 0–23
+- day_of_week      → VARCHAR(10)   "Monday" longest = 9 chars
+- is_weekend       → TINYINT       Binary 0/1
+- trip_distance_km → DECIMAL(8,3)  e.g. 3.413
+- distance_bucket  → VARCHAR(10)   "Short"/"Medium"/"Long"
+
+STATUS: Schema created, table empty - data import on Day 9
