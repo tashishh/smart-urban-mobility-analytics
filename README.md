@@ -114,21 +114,21 @@ during feature engineering, bringing the final dataset to **601,662 rows**.
 ## Key Findings from Analysis
 
 ### Hourly Demand
-![Hourly Trip Demand](screenshots/chart1_hourly_demand.jpg)
+![Hourly Trip Demand](screenshots/chart1_hourly_demand.png)
 
 - **Peak hour:** 6 PM (18:00) → 37,535 trips — the evening rush is the single busiest hour
 - **Quietest hour:** 5 AM → only 6,200 trips
 - Demand drops steadily from midnight to 5 AM, then climbs sharply from 6 AM onward
 
 ### Daily Demand
-![Daily Trip Volume](screenshots/chart2_daily_demand-2.jpg)
+![Daily Trip Volume](screenshots/chart2_daily_demand.png)
 
 - **Busiest day:** Friday → 92,727 trips (19.7% more than Monday)
 - Trip volume builds through the week and peaks Thursday–Saturday
 - Monday is the quietest weekday at 77,456 trips
 
 ### Weekday vs Weekend Behavior
-![Weekday vs Weekend](screenshots/chart5_weekday_weekend-5.jpg)
+![Weekday vs Weekend](screenshots/chart5_weekday_weekend.png)
 
 - Weekdays carry 430,697 trips total vs 170,965 on weekends
 - Per-day demand is nearly identical (~86,000 trips/day each)
@@ -136,7 +136,7 @@ during feature engineering, bringing the final dataset to **601,662 rows**.
 - Weekend riders travel in groups more often — 30.24% group rides vs 25.26% on weekdays
 
 ### Distance Distribution
-![Distance Buckets](screenshots/chart3_distance_buckets-3.jpg)
+![Distance Buckets](screenshots/chart3_distance_buckets.png)
 
 - **Short (0–2 km):** 286,389 trips — 47.6% of all trips
 - **Medium (2–10 km):** 279,029 trips — 46.4% of all trips
@@ -144,7 +144,7 @@ during feature engineering, bringing the final dataset to **601,662 rows**.
 - Median trip distance is just **2.09 km** — NYC taxi use is dominated by short rides
 
 ### Passenger Count
-![Passenger Count](screenshots/chart4_passenger_count-4.jpg)
+![Passenger Count](screenshots/chart4_passenger_count.png)
 
 - **73.3%** of all trips carry exactly 1 passenger — solo rides dominate
 - 2-passenger trips are the second most common at 14.9%
