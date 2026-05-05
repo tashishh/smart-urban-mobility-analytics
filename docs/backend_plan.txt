@@ -1,0 +1,270 @@
+==================================================
+BACKEND PLAN — Smart Urban Mobility Analytics
+File: docs/backend_plan.txt
+Date: May 5, 2026
+==================================================
+
+==================================================
+SECTION 1 — SYSTEM ARCHITECTURE OVERVIEW
+==================================================
+
+How the full stack works together:
+
+DATABASE (MySQL)
+  └── Stores all 601,662 cleaned trip records in the `trips` table
+  └── Has 5 reusable views: hourly_summary, weekday_summary,
+      distance_summary, vendor_summary, weekend_summary
+
+BACKEND (Flask — Python)
+  └── Connects to MySQL database
+  └── Exposes API endpoints that query the views
+  └── Returns the results as JSON
+  └── Does NOT do heavy data processing — the SQL views handle that
+
+API (JSON responses)
+  └── Acts as the bridge between the database and the frontend
+  └── Each endpoint answers one specific business question
+  └── Frontend fetches these URLs to get the data it needs
+
+FRONTEND (HTML + CSS + JavaScript + Chart.js)
+  └── Runs in the browser
+  └── Calls the API endpoints using JavaScript fetch()
+  └── Takes the JSON response and displays it as cards and charts
+  └── Never talks to the database directly
+
+FLOW SUMMARY:
+  Browser → fetch(API URL) → Flask endpoint → MySQL view → JSON → Chart.js
+
+
+
+==================================================
+SECTION 2 — PLANNED API ENDPOINTS
+==================================================
+
+----------------------------------------------
+ENDPOINT 1: /api/kpis
+----------------------------------------------
+Purpose  : Return high-level summary numbers for the KPI cards
+           at the top of the dashboard
+Method   : GET
+SQL Used : Direct COUNT and AVG on the trips table (no view needed)
+
+SQL Query:
+  SELECT
+      COUNT(*)                        AS total_trips,
+      ROUND(AVG(trip_distance_km), 2) AS avg_distance_km,
+      ROUND(AVG(passenger_count), 2)  AS avg_passengers,
+      COUNT(DISTINCT vendor_id)       AS total_vendors
+  FROM trips;
+
+JSON Response Shape:
+  {
+    "total_trips": 601662,
+    "avg_distance_km": 3.42,
+    "avg_passengers": 1.51,
+    "total_vendors": 2
+  }
+
+Dashboard Use:
+  4 KPI cards at the top of the page
+  - Total Trips
+  - Average Distance
+  - Average Passengers
+  - Number of Vendors
+
+
+----------------------------------------------
+ENDPOINT 2: /api/hourly-summary
+----------------------------------------------
+Purpose  : Return trip volume per hour for the line chart
+Method   : GET
+SQL Used : hourly_summary view
+
+SQL (view already created):
+  SELECT * FROM hourly_summary;
+
+JSON Response Shape:
+  [
+    { "hour_of_day": 0,  "total_trips": 21911, "avg_distance_km": 3.99, "avg_passengers": 1.57, "hour_category": "Shoulder" },
+    { "hour_of_day": 1,  "total_trips": 15931, "avg_distance_km": 3.93, "avg_passengers": 1.57, "hour_category": "Off-Peak" },
+    ...
+    { "hour_of_day": 23, "total_trips": 29012, "avg_distance_km": 3.50, "avg_passengers": 1.54, "hour_category": "Shoulder" }
+  ]
+
+Dashboard Use:
+  Line chart — Hourly Trip Demand Across the Day
+  X axis : hour_of_day (0–23)
+  Y axis : total_trips
+  Color  : can use hour_category to highlight peak hours
+
+
+----------------------------------------------
+ENDPOINT 3: /api/weekday-summary
+----------------------------------------------
+Purpose  : Return trip volume per day of week for the bar chart
+Method   : GET
+SQL Used : weekday_summary view
+
+SQL (view already created):
+  SELECT * FROM weekday_summary;
+
+JSON Response Shape:
+  [
+    { "day_of_week": "Monday",    "is_weekend": 0, "total_trips": 77456,  "avg_distance_km": 3.54, "avg_passengers": 1.49 },
+    { "day_of_week": "Tuesday",   "is_weekend": 0, "total_trips": 83952,  "avg_distance_km": 3.33, "avg_passengers": 1.49 },
+    { "day_of_week": "Wednesday", "is_weekend": 0, "total_trips": 86499,  "avg_distance_km": 3.33, "avg_passengers": 1.49 },
+    { "day_of_week": "Thursday",  "is_weekend": 0, "total_trips": 90063,  "avg_distance_km": 3.41, "avg_passengers": 1.49 },
+    { "day_of_week": "Friday",    "is_weekend": 0, "total_trips": 92727,  "avg_distance_km": 3.39, "avg_passengers": 1.52 },
+    { "day_of_week": "Saturday",  "is_weekend": 1, "total_trips": 90556,  "avg_distance_km": 3.32, "avg_passengers": 1.57 },
+    { "day_of_week": "Sunday",    "is_weekend": 1, "total_trips": 80409,  "avg_distance_km": 3.69, "avg_passengers": 1.57 }
+  ]
+
+Dashboard Use:
+  Bar chart — Trip Volume by Day of Week
+  X axis : day_of_week
+  Y axis : total_trips
+  Color  : different color for is_weekend = 1 vs is_weekend = 0
+
+
+----------------------------------------------
+ENDPOINT 4: /api/distance-summary
+----------------------------------------------
+Purpose  : Return trip counts by distance bucket for bar chart
+Method   : GET
+SQL Used : distance_summary view
+
+SQL (view already created):
+  SELECT * FROM distance_summary;
+
+JSON Response Shape:
+  [
+    { "distance_bucket": "Short",  "total_trips": 286389, "avg_distance_km": 1.20, "min_distance_km": 0.00, "max_distance_km": 2.00,  "avg_passengers": 1.50 },
+    { "distance_bucket": "Medium", "total_trips": 279029, "avg_distance_km": 4.10, "min_distance_km": 2.00, "max_distance_km": 10.00, "avg_passengers": 1.52 },
+    { "distance_bucket": "Long",   "total_trips": 36244,  "avg_distance_km": 15.80,"min_distance_km": 10.00,"max_distance_km": 41.55, "avg_passengers": 1.57 }
+  ]
+
+Dashboard Use:
+  Bar chart — Trip Distribution by Distance Category
+  X axis : distance_bucket
+  Y axis : total_trips
+
+
+----------------------------------------------
+ENDPOINT 5: /api/vendor-summary
+----------------------------------------------
+Purpose  : Return vendor comparison data for a summary table or card
+Method   : GET
+SQL Used : vendor_summary view
+
+SQL (view already created):
+  SELECT * FROM vendor_summary;
+
+JSON Response Shape:
+  [
+    { "vendor_id": 1, "total_trips": 289390, "avg_distance_km": 3.39, "avg_passengers": 1.26, "long_trips": 16949, "medium_trips": 133980, "short_trips": 138461 },
+    { "vendor_id": 2, "total_trips": 312272, "avg_distance_km": 3.46, "avg_passengers": 1.75, "long_trips": 19295, "medium_trips": 145049, "short_trips": 147928 }
+  ]
+
+Dashboard Use:
+  Vendor comparison table or two-column summary card
+  Shows how Vendor 1 (CMT) vs Vendor 2 (VeriFone) differ
+
+
+----------------------------------------------
+ENDPOINT 6: /api/weekend-summary
+----------------------------------------------
+Purpose  : Return weekday vs weekend comparison for KPI section
+Method   : GET
+SQL Used : weekend_summary view
+
+SQL (view already created):
+  SELECT * FROM weekend_summary;
+
+JSON Response Shape:
+  [
+    { "day_type": "Weekday", "total_trips": 430697, "avg_distance_km": 3.40, "avg_passengers": 1.49, "group_trips": 108776, "group_trip_pct": 25.26 },
+    { "day_type": "Weekend", "total_trips": 170965, "avg_distance_km": 3.50, "avg_passengers": 1.57, "group_trips": 51695,  "group_trip_pct": 30.24 }
+  ]
+
+Dashboard Use:
+  Weekday vs Weekend comparison KPI card or small summary table
+
+
+==================================================
+SECTION 3 — ENDPOINT SUMMARY TABLE
+==================================================
+
+  Endpoint               Method   SQL Source          Dashboard Use
+  -----------------------------------------------------------------------
+  /api/kpis              GET      trips (direct)      4 KPI cards
+  /api/hourly-summary    GET      hourly_summary      Line chart
+  /api/weekday-summary   GET      weekday_summary     Bar chart
+  /api/distance-summary  GET      distance_summary    Bar chart
+  /api/vendor-summary    GET      vendor_summary      Comparison table
+  /api/weekend-summary   GET      weekend_summary     KPI comparison card
+
+
+==================================================
+SECTION 4 — FLASK FILE PLAN
+==================================================
+
+backend/
+├── app.py          # Main Flask app — all routes defined here
+├── db.py           # Database connection function (reusable)
+└── requirements.txt  # Flask and mysql-connector-python
+
+app.py structure:
+  - Import Flask, db connection
+  - Define each route with @app.route
+  - Each route calls db, runs SELECT on view, returns jsonify()
+
+db.py structure:
+  - One function: get_connection()
+  - Returns a live MySQL connection using mysql-connector-python
+  - Reads host, user, password, database from config or hardcoded for now
+
+
+==================================================
+SECTION 5 — WHAT THE FRONTEND NEEDS
+==================================================
+
+The frontend dashboard will have:
+
+  1. KPI Cards row (top of page)
+     - Total Trips        ← /api/kpis → total_trips
+     - Avg Distance       ← /api/kpis → avg_distance_km
+     - Avg Passengers     ← /api/kpis → avg_passengers
+     - Weekend Group %    ← /api/weekend-summary → group_trip_pct
+
+  2. Line Chart — Hourly Demand
+     ← /api/hourly-summary → hour_of_day + total_trips
+
+  3. Bar Chart — Daily Demand
+     ← /api/weekday-summary → day_of_week + total_trips
+
+  4. Bar Chart — Distance Buckets
+     ← /api/distance-summary → distance_bucket + total_trips
+
+  5. Vendor Comparison Table
+     ← /api/vendor-summary → vendor_id + total_trips + avg_distance_km
+
+  6. Weekday vs Weekend Summary Card
+     ← /api/weekend-summary → day_type + total_trips + group_trip_pct
+
+
+==================================================
+SECTION 6 — PACKAGES TO INSTALL ON DAY 15
+==================================================
+
+  pip install flask
+  pip install mysql-connector-python
+  pip install flask-cors
+
+  flask-cors is needed because the frontend (browser) and
+  backend (Flask) run on different ports locally, which causes
+  CORS errors without it.
+
+
+==================================================
+STATUS: Backend Plan Complete — Ready for Day 15
+==================================================
