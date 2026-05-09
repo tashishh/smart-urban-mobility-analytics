@@ -13,31 +13,41 @@ CORS(app)
 def home():
     return jsonify({
         "message": "Smart Urban Mobility API is running",
-        "status": "ok"
+        "status": "ok",
+        "version": "1.0",
+        "endpoints": [
+            "/api/kpis",
+            "/api/hourly-summary",
+            "/api/weekday-summary",
+            "/api/distance-summary",
+            "/api/vendor-summary",
+            "/api/weekend-summary"
+        ]
     })
 
 
 # -----------------------------------------------
-# DB test route — confirms MySQL connection works
+# 404 handler — unknown URL visited
 # -----------------------------------------------
-@app.route("/api/test")
-def test_db():
-    try:
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT COUNT(*) FROM trips")
-        result = cursor.fetchone()
-        cursor.close()
-        conn.close()
-        return jsonify({
-            "message": "Database connection successful",
-            "total_trips": result[0]
-        })
-    except Exception as e:
-        return jsonify({
-            "message": "Database connection failed",
-            "error": str(e)
-        }), 500
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify({
+        "error": "Endpoint not found",
+        "status": 404,
+        "message": "The URL you requested does not exist on this API"
+    }), 404
+
+
+# -----------------------------------------------
+# 500 handler — internal server error
+# -----------------------------------------------
+@app.errorhandler(500)
+def server_error(e):
+    return jsonify({
+        "error": "Internal server error",
+        "status": 500,
+        "message": "Something went wrong on the server"
+    }), 500
 
 
 # -----------------------------------------------
@@ -74,7 +84,7 @@ def hourly_summary():
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM hourly_summary")
+        cursor.execute("SELECT * FROM hourly_summary ORDER BY hour_of_day")
         results = cursor.fetchall()
         cursor.close()
         conn.close()
@@ -92,7 +102,12 @@ def weekday_summary():
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM weekday_summary")
+        cursor.execute("""
+            SELECT * FROM weekday_summary
+            ORDER BY FIELD(day_of_week,
+                'Monday','Tuesday','Wednesday',
+                'Thursday','Friday','Saturday','Sunday')
+        """)
         results = cursor.fetchall()
         cursor.close()
         conn.close()
@@ -110,7 +125,10 @@ def distance_summary():
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM distance_summary")
+        cursor.execute("""
+            SELECT * FROM distance_summary
+            ORDER BY FIELD(distance_bucket, 'Short', 'Medium', 'Long')
+        """)
         results = cursor.fetchall()
         cursor.close()
         conn.close()
@@ -128,7 +146,7 @@ def vendor_summary():
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM vendor_summary")
+        cursor.execute("SELECT * FROM vendor_summary ORDER BY vendor_id")
         results = cursor.fetchall()
         cursor.close()
         conn.close()
@@ -146,7 +164,10 @@ def weekend_summary():
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM weekend_summary")
+        cursor.execute("""
+            SELECT * FROM weekend_summary
+            ORDER BY FIELD(day_type, 'Weekday', 'Weekend')
+        """)
         results = cursor.fetchall()
         cursor.close()
         conn.close()
