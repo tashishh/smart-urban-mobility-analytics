@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Urban Mobility Analytics</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ==============================
+       HEADER
+  ============================== -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-logo">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-label="Smart Urban Mobility Logo">
+          <rect width="32" height="32" rx="8" fill="#01696f"/>
+          <circle cx="10" cy="22" r="3" fill="white"/>
+          <circle cx="22" cy="22" r="3" fill="white"/>
+          <path d="M6 22 L6 14 L10 8 L22 8 L26 14 L26 22" stroke="white" stroke-width="2" fill="none" stroke-linejoin="round"/>
+          <path d="M6 14 L26 14" stroke="white" stroke-width="2"/>
+        </svg>
+        <span class="header-title">Smart Urban Mobility</span>
+      </div>
+      <div class="header-right">
+        <span class="header-badge">NYC Taxi Analytics</span>
+        <button class="theme-toggle" data-theme-toggle aria-label="Switch theme">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==============================
+       MAIN CONTENT
+  ============================== -->
+  <main class="main">
+
+    <!-- Page Title -->
+    <div class="page-title">
+      <h1>Trip Analytics Dashboard</h1>
+      <p>Analyzing <strong>601,662</strong> NYC taxi trips — patterns, peaks, and passenger behavior</p>
+    </div>
+
+    <!-- ==============================
+         KPI CARDS ROW
+    ============================== -->
+    <section class="kpi-grid">
+
+      <div class="kpi-card">
+        <div class="kpi-icon">🚕</div>
+        <div class="kpi-content">
+          <span class="kpi-label">Total Trips</span>
+          <span class="kpi-value" id="kpi-total-trips">—</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon">📍</div>
+        <div class="kpi-content">
+          <span class="kpi-label">Avg Distance</span>
+          <span class="kpi-value" id="kpi-avg-distance">—</span>
+          <span class="kpi-unit">km</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon">👥</div>
+        <div class="kpi-content">
+          <span class="kpi-label">Avg Passengers</span>
+          <span class="kpi-value" id="kpi-avg-passengers">—</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon">📅</div>
+        <div class="kpi-content">
+          <span class="kpi-label">Peak Day</span>
+          <span class="kpi-value" id="kpi-peak-day">—</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==============================
+         HOURLY DEMAND — LINE CHART
+    ============================== -->
+    <section class="chart-section">
+      <div class="chart-card full-width">
+        <div class="chart-header">
+          <div>
+            <h2 class="chart-title">Hourly Trip Demand</h2>
+            <p class="chart-subtitle">Number of trips per hour across all days</p>
+          </div>
+          <div class="chart-badge peak">Peak: 6 PM</div>
+        </div>
+        <div class="chart-container">
+          <canvas id="chart-hourly"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==============================
+         DAILY + DISTANCE — TWO COLUMN
+    ============================== -->
+    <section class="chart-grid-2">
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <h2 class="chart-title">Trips by Day of Week</h2>
+            <p class="chart-subtitle">Total trips per weekday</p>
+          </div>
+          <div class="chart-badge">Busiest: Friday</div>
+        </div>
+        <div class="chart-container">
+          <canvas id="chart-daily"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <h2 class="chart-title">Trip Distance Breakdown</h2>
+            <p class="chart-subtitle">Short / Medium / Long distance split</p>
+          </div>
+          <div class="chart-badge">Median: 2.09 km</div>
+        </div>
+        <div class="chart-container">
+          <canvas id="chart-distance"></canvas>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==============================
+         WEEKDAY VS WEEKEND TABLE
+    ============================== -->
+    <section class="chart-section">
+      <div class="chart-card full-width">
+        <div class="chart-header">
+          <div>
+            <h2 class="chart-title">Weekday vs Weekend Comparison</h2>
+            <p class="chart-subtitle">How rider behavior changes on weekends</p>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table" id="table-weekend">
+            <thead>
+              <tr>
+                <th>Day Type</th>
+                <th>Total Trips</th>
+                <th>Avg Distance (km)</th>
+                <th>Avg Passengers</th>
+                <th>Group Trips</th>
+                <th>Group Trip %</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="tag weekday">Weekday</span></td>
+                <td id="wd-total-trips">—</td>
+                <td id="wd-avg-distance">—</td>
+                <td id="wd-avg-passengers">—</td>
+                <td id="wd-group-trips">—</td>
+                <td id="wd-group-pct">—</td>
+              </tr>
+              <tr>
+                <td><span class="tag weekend">Weekend</span></td>
+                <td id="we-total-trips">—</td>
+                <td id="we-avg-distance">—</td>
+                <td id="we-avg-passengers">—</td>
+                <td id="we-group-trips">—</td>
+                <td id="we-group-pct">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==============================
+         VENDOR COMPARISON
+    ============================== -->
+    <section class="chart-section">
+      <div class="chart-card full-width">
+        <div class="chart-header">
+          <div>
+            <h2 class="chart-title">Vendor Comparison</h2>
+            <p class="chart-subtitle">CMT (Vendor 1) vs VeriFone (Vendor 2)</p>
+          </div>
+        </div>
+        <div class="vendor-grid" id="vendor-grid">
+          <div class="vendor-card">
+            <div class="vendor-name">Vendor 1 — CMT</div>
+            <div class="vendor-stat"><span class="vendor-label">Total Trips</span><span class="vendor-value" id="v1-trips">—</span></div>
+            <div class="vendor-stat"><span class="vendor-label">Avg Distance</span><span class="vendor-value" id="v1-distance">—</span></div>
+            <div class="vendor-stat"><span class="vendor-label">Avg Passengers</span><span class="vendor-value" id="v1-passengers">—</span></div>
+          </div>
+          <div class="vendor-divider"></div>
+          <div class="vendor-card">
+            <div class="vendor-name">Vendor 2 — VeriFone</div>
+            <div class="vendor-stat"><span class="vendor-label">Total Trips</span><span class="vendor-value" id="v2-trips">—</span></div>
+            <div class="vendor-stat"><span class="vendor-label">Avg Distance</span><span class="vendor-value" id="v2-distance">—</span></div>
+            <div class="vendor-stat"><span class="vendor-label">Avg Passengers</span><span class="vendor-value" id="v2-passengers">—</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==============================
+       FOOTER
+  ============================== -->
+  <footer class="footer">
+    <p>Smart Urban Mobility Analytics &mdash; NYC Taxi Trip Data &mdash; Built with Python, MySQL, Flask &amp; Chart.js</p>
+    <p class="footer-sub">Ashish Thapa &middot; <a href="https://github.com/tashishh/smart-urban-mobility-analytics" target="_blank" rel="noopener noreferrer">GitHub</a></p>
+  </footer>
+
+  <!-- Chart.js — loaded but charts drawn on Day 19 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>
