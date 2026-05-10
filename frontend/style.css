@@ -462,6 +462,37 @@ img, canvas { display: block; max-width: 100%; }
   .chart-container { height: 220px; }
 }
 
+/* ==============================
+   FILTER TOGGLE
+============================== */
+.filter-toggle {
+  display: flex;
+  gap: var(--space-2);
+  padding: 0 var(--space-6) var(--space-4);
+}
+
+.filter-btn {
+  padding: var(--space-1) var(--space-4);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+
+.filter-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.filter-btn.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
 
 /* ============================================
    THEME TOGGLE SCRIPT

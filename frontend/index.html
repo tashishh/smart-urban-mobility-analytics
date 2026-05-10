@@ -112,17 +112,25 @@
     <section class="chart-grid-2">
 
       <div class="chart-card">
-        <div class="chart-header">
-          <div>
-            <h2 class="chart-title">Trips by Day of Week</h2>
-            <p class="chart-subtitle">Total trips per weekday</p>
-          </div>
-          <div class="chart-badge">Busiest: Friday</div>
-        </div>
-        <div class="chart-container">
-          <canvas id="chart-daily"></canvas>
-        </div>
-      </div>
+  <div class="chart-header">
+    <div>
+      <h2 class="chart-title">Trips by Day of Week</h2>
+      <p class="chart-subtitle">Total trips per weekday</p>
+    </div>
+    <div class="chart-badge" id="badge-busiest">Busiest: Friday</div>
+  </div>
+
+  <!-- FILTER TOGGLE -->
+  <div class="filter-toggle">
+    <button class="filter-btn active" id="btn-all"     onclick="setDayFilter('all')">All Days</button>
+    <button class="filter-btn"        id="btn-weekday" onclick="setDayFilter('weekday')">Weekday</button>
+    <button class="filter-btn"        id="btn-weekend" onclick="setDayFilter('weekend')">Weekend</button>
+  </div>
+
+  <div class="chart-container">
+    <canvas id="chart-daily"></canvas>
+  </div>
+</div>
 
       <div class="chart-card">
         <div class="chart-header">

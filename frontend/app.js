@@ -106,6 +106,7 @@ async function loadWeekdaySummary() {
   try {
     const response = await fetch(`${API_BASE}/api/weekday-summary`);
     const data = await response.json();
+    allWeekdayData = data;   // ← save full data for filter
 
     // Peak day KPI
     const peakDay = data.reduce((max, row) =>
@@ -125,7 +126,7 @@ async function loadWeekdaySummary() {
     const ctx = document.getElementById("chart-daily");
     if (!ctx) return;
 
-    new Chart(ctx, {
+    dailyChart = new Chart(ctx, {
       type: "bar",
       data: {
         labels,
@@ -364,6 +365,59 @@ function initThemeToggle() {
   });
 }
 
+// ============================================
+// WEEKDAY / WEEKEND FILTER
+// ============================================
+
+// Store the full 7-day data so we can filter without re-fetching
+let allWeekdayData = [];
+let dailyChart = null;
+
+// Called by the 3 filter buttons
+function setDayFilter(filter) {
+  // Update active button style
+  document.getElementById("btn-all").classList.toggle("active",     filter === "all");
+  document.getElementById("btn-weekday").classList.toggle("active", filter === "weekday");
+  document.getElementById("btn-weekend").classList.toggle("active", filter === "weekend");
+
+  // Filter the data
+  const WEEKDAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
+  const WEEKENDS = ["Saturday","Sunday"];
+
+  let filtered;
+  if (filter === "weekday") {
+    filtered = allWeekdayData.filter(r => WEEKDAYS.includes(r.day_of_week));
+  } else if (filter === "weekend") {
+    filtered = allWeekdayData.filter(r => WEEKENDS.includes(r.day_of_week));
+  } else {
+    filtered = allWeekdayData;
+  }
+
+  // Find new peak within the filtered set
+  const peak = filtered.reduce((max, row) =>
+    row.total_trips > max.total_trips ? row : max,
+    filtered[0]
+  );
+
+  // Update the badge
+  const badge = document.getElementById("badge-busiest");
+  if (badge && peak) badge.textContent = `Busiest: ${peak.day_of_week}`;
+
+  // Rebuild chart data
+  const labels   = filtered.map(r => r.day_of_week.slice(0, 3));
+  const values   = filtered.map(r => r.total_trips);
+  const bgColors = filtered.map(r =>
+    r.day_of_week === peak.day_of_week ? COLORS.teal : COLORS.tealMid
+  );
+
+  // Update existing chart (don't create a new one)
+  if (dailyChart) {
+    dailyChart.data.labels              = labels;
+    dailyChart.data.datasets[0].data   = values;
+    dailyChart.data.datasets[0].backgroundColor = bgColors;
+    dailyChart.update();
+  }
+}
 
 // ============================================
 // INIT — Run everything when page loads
