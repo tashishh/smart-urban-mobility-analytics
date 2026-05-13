@@ -1,0 +1,49 @@
+======================================================
+  SMART URBAN MOBILITY — AWS DEPLOYMENT NOTES
+  Day 21 | Date: 2026-05-013
+======================================================
+
+SERVICE USED
+  AWS S3 — Static Website Hosting
+
+BUCKET INFO
+  Bucket Name  : smart-urban-mobility-ashish
+  Region       : us-west-1
+  Hosting Type : Static Website (S3 endpoint)
+  S3 URL       : http://smart-urban-mobility-ashish.s3-website-us-west-1.amazonaws.com/
+
+FILES UPLOADED
+  - index.html
+  - style.css
+  - app.js
+
+WHAT WORKS ON S3
+  ✅ The HTML/CSS/JS frontend loads correctly
+  ✅ Dashboard layout, charts, toggle filter are visible
+  ✅ Theme toggle (dark/light mode) works
+
+WHAT DOES NOT WORK YET (Known Limitation)
+  ❌ Chart data does not populate
+  Reason: The Flask API (backend) still runs on localhost:5000
+  The S3-hosted frontend calls http://localhost:5000/api/...
+  which only works when Flask is running on the same local machine.
+
+ARCHITECTURE STATUS
+  Frontend  → AWS S3 (cloud-hosted) ✅
+  Backend   → Local Flask server    ⚠️ (localhost only)
+
+NEXT STEPS (Future Days)
+  - Deploy Flask backend to AWS EC2 or AWS Lambda
+  - Update API_BASE in app.js to the EC2/Lambda public URL
+  - Enable CORS on Flask for the S3 domain
+  - Optionally add AWS CloudFront CDN in front of S3
+
+KEY CONCEPTS LEARNED
+  - S3 stores and serves static files (HTML, CSS, JS)
+  - Bucket policy controls public read access
+  - Static hosting requires Index Document = index.html
+  - Decoupled architecture: frontend and backend can be
+    hosted independently
+  - S3 endpoint is HTTP only (HTTPS requires CloudFront)
+
+======================================================
